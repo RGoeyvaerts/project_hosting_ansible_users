@@ -1,0 +1,24 @@
+- name: Create user with specified UID and GID
+  hosts: your_hosts
+  become: true
+  vars:
+    username: "{{ ansible_user }}"
+    uid: "{{ ansible_uid }}"
+    gid: "{{ ansible_gid }}"
+    password: "{{ ansible_password }}"
+  tasks:
+    - name: Create group
+      group:
+        name: "{{ username }}"
+        gid: "{{ gid }}"
+        state: present
+    - name: Create user
+      user:
+        name: "{{ username }}"
+        uid: "{{ uid }}"
+        group: "{{ username }}"
+        groups: "sudo"
+        home: "/home/{{ username }}"
+        shell: "/bin/bash"
+        password: "{{ password | password_hash('sha512') }}"
+        state: present
