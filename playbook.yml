@@ -1,5 +1,5 @@
-- name: Create user with specified UID and GID
-  hosts: your_hosts
+- name: Create user 
+  hosts: all
   become: true
   vars:
     username: "{{ ansible_user }}"
@@ -7,14 +7,16 @@
     gid: "{{ ansible_gid }}"
     password: "{{ ansible_password }}"
   tasks:
+
     - name: Create group
       group:
         name: "{{ username }}"
         gid: "{{ gid }}"
         state: present
+
     - name: Create user
       user:
-        name: "{{ username }}"
+        name: "{{username }}"
         uid: "{{ uid }}"
         group: "{{ username }}"
         groups: "sudo"
@@ -22,3 +24,20 @@
         shell: "/bin/bash"
         password: "{{ password | password_hash('sha512') }}"
         state: present
+- name: create directory with permissions 700
+  hosts: second
+  become: true
+  tasks:
+    - name: Create directory with permissions 700
+      file:
+        path: "/mnt/myshareddir{{ username }}"
+        state: directory
+        mode: '0700'
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        
+    - name: Add user to sftp group
+      user:
+        name: "{{ username }}"
+        groups: "sftp"
+        append: true
