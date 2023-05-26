@@ -1,13 +1,13 @@
+---
 - name: Create user 
   hosts: all
   become: true
   vars:
-    username: "{{ ansible_user }}"
-    uid: "{{ ansible_uid }}"
-    gid: "{{ ansible_gid }}"
-    password: "{{ ansible_password }}"
+    username: "test@test1"
+    uid: 232
+    gid: 232
+    password: "test"
   tasks:
-
     - name: Create group
       group:
         name: "{{ username }}"
@@ -24,6 +24,7 @@
         shell: "/bin/bash"
         password: "{{ password | password_hash('sha512') }}"
         state: present
+
 - name: create directory with permissions 700
   hosts: second
   become: true
